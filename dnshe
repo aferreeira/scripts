@@ -1,0 +1,35 @@
+#!/bin/bash -x 
+export DNSHEALIAS=ferreira.rocko83.com.br
+export INTERFACE=wlp3s0
+export DNSEXTERNO=8.8.8.8
+export TENTATIVADNS=3
+export SENHAALIAS=UG6ilzO9Ti8au8F_qDII5Zg2PFrJJfTc4EQGimHHzZTXp5xwfh
+export DNSHEADDRESS=dyn.dns.he.net
+function meuip() {
+        #/sbin/ifconfig $1 | /bin/grep -w inet | /usr/bin/awk '{print $2}' | /usr/bin/awk -F : '{print $2}'
+        /sbin/ip addr show wlp3s0 | /bin/grep inet | /bin/grep -v inet6 | /usr/bin/awk '{print $2}' | /usr/bin/awk -F \/ '{print $1}'
+}
+function dnsip() {
+        /usr/bin/dig $1 | /bin/grep ^$1 | /bin/grep -v grep | /usr/bin/awk '{print $5}'
+}
+function testeping() {
+        /bin/ping -c $2 $1 > /dev/null
+        retorno=$?
+        if [ $retorno -ne 0 ]
+        then
+                /bin/echo Erro de rota
+                exit 1
+        fi
+}
+function alterarip() {
+        /usr/bin/curl --insecure "https://$DNSHEALIAS:$SENHAALIAS@$DNSHEADDRESS/nic/update?hostname=$DNSHEALIAS&myip=$1"
+}
+testeping $DNSEXTERNO $TENTATIVADNS
+export atual=$(meuip $INTERFACE)
+export configurado=$(dnsip $DNSHEALIAS)
+if [ "$atual" != "$configurado" ]
+then
+        alterarip $atual
+fi
+/bin/date > /tmp/dnshe
+/bin/echo atual=$atual configurado=$configurado >> /tmp/dnshe
