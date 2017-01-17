@@ -192,7 +192,7 @@ case $# in
 	then
 		ssh-add
 	fi
-	$CMD_SCREEN -t GESTOR -S GESTOR $programa screen
+	$CMD_SCREEN -T $TERM -t GESTOR -S GESTOR $programa screen
 	;;
 1)
 	case $1 in
