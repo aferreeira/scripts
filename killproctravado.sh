@@ -1,5 +1,5 @@
 #!/bin/bash
-mypid=`ps -ef | grep -v grep | grep br.com.netshoes.rastreamento.main.Execute | head -n 1 | awk '{print $2}'`
+mypid=`ps -ef | grep -v grep | grep <param> | head -n 1 | awk '{print $2}'`
 if [ -n "$mypid"  ] ; then
   init=`stat -t /proc/$mypid | awk '{print $14}'`
   curr=`date +%s`
